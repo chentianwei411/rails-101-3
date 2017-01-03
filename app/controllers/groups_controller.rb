@@ -43,7 +43,31 @@ before_action :find_group_and_check_permission, only:[:edit,:update,:destroy]
     end
   end
 
+  def join
+    @group = Group.find(params[:id])
 
+      if !current_user.is_member_of?(@group)
+        current_user.join!(@group)
+        flash[:notice] = "加入本讨论群成功！"
+      else
+        flash[:warning] = "你已经是本讨论群成员了！"
+      end
+
+      redirect_to group_path(@group)
+  end
+
+  def quit
+    @group =Group.find(params[:id])
+
+    if current_user.is_member_of?(@group)
+      current_user.quit!(@group)
+      flash[:alert] = "已退出本讨论群！"
+    else
+      flash[:warning] = "你不是本群成员，怎么退出"
+    end
+
+    redirect_to group_path(@group)
+  end
 
 private
 
